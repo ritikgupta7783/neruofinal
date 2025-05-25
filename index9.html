@@ -1,0 +1,2857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuroBreath 2.0 - Advanced Breathing Exercises</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+    <style>
+        :root {
+            --primary: #3a86ff;
+            --primary-dark: #2667cc;
+            --secondary: #8338ec;
+            --success: #06d6a0;
+            --warning: #ffbe0b;
+            --danger: #ef476f;
+            --dark: #1a1a2e;
+            --darker: #16213e;
+            --light: #f8f9fa;
+            --gray: #e2e8f0;
+            --overlay: rgba(0,0,0,0.7);
+            --glass: rgba(255, 255, 255, 0.2);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            
+            --inhale: var(--success);
+            --exhale: var(--primary);
+            --hold: var(--warning);
+            --double-inhale: #8338ec;
+            --smoker-purge: #ff6b6b;
+            
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.15);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: var(--transition);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        body.dark-mode {
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            color: var(--light);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 1.5rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+            position: relative;
+            padding-top: 0.5rem;
+        }
+
+        h1 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+            font-size: 2rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .technique-title {
+            color: var(--secondary);
+            font-weight: 600;
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            padding: 0.5rem 1rem;
+            background-color: rgba(131, 56, 236, 0.1);
+            border-radius: 8px;
+            display: inline-block;
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+        }
+
+        .description {
+            color: var(--secondary);
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .settings-button {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--primary);
+            padding: 0.5rem;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            backdrop-filter: blur(5px);
+        }
+
+        .settings-button:hover {
+            background-color: rgba(58, 134, 255, 0.3);
+            transform: rotate(30deg);
+        }
+
+        body.dark-mode .settings-button {
+            color: var(--light);
+            background: rgba(26, 26, 46, 0.5);
+        }
+
+        body.dark-mode .settings-button:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            gap: 2rem;
+            padding: 1rem 0;
+        }
+
+        .breathing-container {
+            position: relative;
+            width: 280px;
+            height: 280px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .breathing-circle {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            transition: transform 0.5s ease-in-out, background-color 0.3s;
+            transform: scale(1);
+            backdrop-filter: blur(5px);
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+
+        .breathing-circle::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            box-sizing: border-box;
+        }
+
+        .breathing-circle.inhale {
+            background-color: var(--inhale);
+            animation: breatheIn 4s ease-in-out forwards;
+        }
+
+        .breathing-circle.exhale {
+            background-color: var(--exhale);
+            animation: breatheOut 6s ease-in-out forwards;
+        }
+
+        .breathing-circle.hold {
+            background-color: var(--hold);
+        }
+
+        .breathing-circle.double-inhale {
+            background-color: var(--double-inhale);
+            animation: doubleInhale 2s ease-in-out forwards;
+        }
+        
+        .breathing-circle.smoker-purge {
+            background-color: var(--smoker-purge);
+            animation: smokerPurge 8s ease-in-out forwards;
+        }
+
+        .phase-text {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: white;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+            z-index: 1;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .timer {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: white;
+            text-align: center;
+            font-feature-settings: "tnum";
+            font-variant-numeric: tabular-nums;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .progress-info {
+            text-align: center;
+            margin-top: 1rem;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .round-info {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background-color: var(--gray);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+
+        body.dark-mode .progress-container {
+            background-color: #2d3748;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        button {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            backdrop-filter: blur(5px);
+            border: 1px solid var(--glass-border);
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background-color: var(--gray);
+            color: var(--dark);
+            box-shadow: var(--shadow-sm);
+        }
+
+        body.dark-mode .btn-secondary {
+            background-color: rgba(45, 55, 72, 0.7);
+            color: var(--light);
+        }
+
+        .btn-secondary:hover {
+            background-color: #cbd5e0;
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        body.dark-mode .btn-secondary:hover {
+            background-color: rgba(74, 85, 104, 0.8);
+        }
+
+        .btn-secondary:active {
+            transform: translateY(0);
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-danger:hover {
+            background-color: #d7366e;
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .btn-danger:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+
+
+
+
+
+
+
+/*State - Panel */
+
+/* Stats Panel Styles */
+.stats-panel {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.stats-panel h4 {
+    color: var(--primary);
+    margin-bottom: 1.5rem;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.stat-card {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    padding: 1.2rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.stat-card.highlight {
+    background: rgba(58, 134, 255, 0.2);
+    border: 1px solid rgba(58, 134, 255, 0.3);
+}
+
+.stat-card-icon {
+    width: 40px;
+    height: 40px;
+    margin: 0 auto 0.8rem;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stat-card-icon svg {
+    width: 20px;
+    height: 20px;
+    color: var(--primary);
+}
+
+.stat-card-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 0.3rem;
+    transition: all 0.3s ease;
+}
+
+.stat-card-label {
+    font-size: 0.85rem;
+    opacity: 0.9;
+    margin-bottom: 0.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+}
+
+.badge {
+    background: var(--success);
+    color: white;
+    font-size: 0.6rem;
+    padding: 0.2rem 0.4rem;
+    border-radius: 10px;
+    display: inline-block;
+}
+
+.stat-card-progress {
+    height: 4px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 0.5rem;
+}
+
+.progress-bar {
+    height: 100%;
+    background: var(--primary);
+    width: 0%;
+    transition: width 0.5s ease;
+}
+
+.capacity-meter {
+    height: 6px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 0.8rem;
+}
+
+.capacity-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--success), var(--primary));
+    width: 0%;
+    transition: width 0.5s ease;
+}
+
+.stat-card-trend {
+    font-size: 0.7rem;
+    margin-top: 0.3rem;
+    color: var(--success);
+}
+
+.btn-stats-details {
+    background: none;
+    border: none;
+    color: var(--primary);
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    margin: 0.5rem auto 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-stats-details:hover {
+    opacity: 0.8;
+}
+
+.btn-stats-details svg {
+    transition: transform 0.3s ease;
+}
+
+.btn-stats-details.active svg {
+    transform: rotate(180deg);
+}
+
+/* Firework animation for streak */
+.firework {
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--warning);
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Dark mode styles */
+body.dark-mode .stats-panel {
+    background: rgba(26, 26, 46, 0.5);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .stat-card {
+    background: rgba(26, 26, 46, 0.4);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .stat-card.highlight {
+    background: rgba(58, 134, 255, 0.15);
+}
+
+body.dark-mode .stat-card-icon {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .stat-card {
+        padding: 1rem;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        /* Settings Panel */
+        .settings-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--overlay);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .settings-overlay.visible {
+            display: flex;
+            opacity: 1;
+        }
+
+        .settings-panel {
+            background-color: var(--light);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-lg);
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid var(--glass-border);
+        }
+
+        .settings-overlay.visible .settings-panel {
+            transform: translateY(0);
+        }
+
+        body.dark-mode .settings-panel {
+            background: rgba(26, 26, 46, 0.9);
+            color: var(--light);
+        }
+
+        .close-settings {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--primary);
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: var(--transition);
+            backdrop-filter: blur(5px);
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+        }
+
+        .close-settings:hover {
+            background-color: rgba(58, 134, 255, 0.3);
+        }
+
+        body.dark-mode .close-settings {
+            color: var(--light);
+        }
+
+        .settings-panel h3 {
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            text-align: center;
+            font-size: 1.5rem;
+        }
+
+        .settings-section {
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--gray);
+            padding-bottom: 1.5rem;
+        }
+
+        body.dark-mode .settings-section {
+            border-bottom-color: rgba(255,255,255,0.1);
+        }
+
+        .settings-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .settings-section h4 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .settings-row {
+            margin-bottom: 1rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .settings-row label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        body.dark-mode .settings-row label {
+            color: var(--light);
+        }
+
+        .settings-row input, .settings-row select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--gray);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+            background: rgba(255,255,255,0.8);
+            backdrop-filter: blur(5px);
+        }
+
+        body.dark-mode .settings-row input, 
+        body.dark-mode .settings-row select {
+            background: rgba(26, 26, 46, 0.7);
+            border-color: rgba(255,255,255,0.1);
+            color: var(--light);
+        }
+
+        .settings-row input:focus, .settings-row select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(58, 134, 255, 0.2);
+        }
+
+        /* Toggle Switch */
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        /* Technique Info */
+        .technique-info {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            border-left: 4px solid var(--primary);
+            backdrop-filter: blur(5px);
+            border: 1px solid var(--glass-border);
+        }
+
+        body.dark-mode .technique-info {
+            background-color: rgba(26, 32, 44, 0.9);
+        }
+
+        .technique-info h4 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .technique-info p {
+            margin-bottom: 0.75rem;
+        }
+
+        .technique-benefits {
+            background-color: rgba(6, 214, 160, 0.1);
+            padding: 0.75rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+            border-left: 3px solid var(--success);
+        }
+
+        body.dark-mode .technique-benefits {
+            background-color: rgba(6, 214, 160, 0.15);
+        }
+
+        .technique-benefits h5 {
+            color: var(--success);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .technique-steps {
+            margin: 1rem 0;
+            padding: 0.75rem;
+            background-color: rgba(58, 134, 255, 0.1);
+            border-radius: 6px;
+            border-left: 3px solid var(--primary);
+        }
+
+        body.dark-mode .technique-steps {
+            background-color: rgba(58, 134, 255, 0.15);
+        }
+
+        .technique-steps h5 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .technique-steps ol {
+            padding-left: 1.25rem;
+        }
+
+        .technique-steps li {
+            margin-bottom: 0.5rem;
+        }
+
+        .technique-cautions {
+            background-color: rgba(239, 71, 111, 0.1);
+            padding: 0.75rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+            border-left: 3px solid var(--danger);
+        }
+
+        body.dark-mode .technique-cautions {
+            background-color: rgba(239, 71, 111, 0.15);
+        }
+
+        .technique-cautions h5 {
+            color: var(--danger);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .technique-research {
+            font-style: italic;
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-top: 1rem;
+        }
+
+        /* Patient-friendly improvements */
+        .patient-tip {
+            background-color: rgba(255, 190, 11, 0.1);
+            padding: 0.75rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+            border-left: 3px solid var(--warning);
+        }
+        
+        body.dark-mode .patient-tip {
+            background-color: rgba(255, 190, 11, 0.15);
+        }
+        
+        .patient-tip h5 {
+            color: var(--warning);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .breathing-guidance {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 0.5rem;
+            text-align: center;
+        }
+        
+        body.dark-mode .breathing-guidance {
+            color: #aaa;
+        }
+        
+        /* Smoker-specific elements */
+        .smoker-stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: rgba(239, 71, 111, 0.1);
+            border-radius: 8px;
+            border-left: 3px solid var(--danger);
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--danger);
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+        
+        .smoker-progress {
+            width: 100%;
+            height: 10px;
+            background: rgba(239, 71, 111, 0.2);
+            border-radius: 5px;
+            margin-top: 1rem;
+            overflow: hidden;
+        }
+        
+        .smoker-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ef476f, #ff9e7d);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .smoker-milestone {
+            position: absolute;
+            height: 15px;
+            width: 2px;
+            background: white;
+            top: -3px;
+        }
+        
+        .smoker-milestone-label {
+            position: absolute;
+            top: -25px;
+            left: -15px;
+            font-size: 0.7rem;
+            white-space: nowrap;
+        }
+
+
+
+
+        .firework-particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    opacity: 0;
+    animation: firework 1s ease-out forwards;
+}
+
+@keyframes firework {
+    0% { transform: translate(0, 0); opacity: 1; }
+    100% { transform: translate(var(--tx), var(--ty)); opacity: 0; }
+}
+
+
+
+
+
+
+
+
+        /* Responsive Design */
+        @media (max-width: 640px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            h1 {
+                font-size: 1.75rem;
+            }
+            
+            .breathing-container {
+                width: 240px;
+                height: 240px;
+            }
+            
+            .breathing-circle {
+                width: 180px;
+                height: 180px;
+            }
+            
+            .timer {
+                font-size: 2rem;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+            }
+            
+            .settings-panel {
+                padding: 1rem;
+            }
+            
+            .smoker-stats {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+
+        /* Utility Classes */
+        .hidden {
+            display: none !important;
+        }
+
+        .flex-center {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .icon {
+            width: 20px;
+            height: 20px;
+        }
+        
+        .creator {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            margin-top: 0.5rem;
+        }
+        
+        /* Animations */
+        @keyframes breatheIn {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.2); }
+        }
+
+        @keyframes breatheOut {
+            0% { transform: scale(1.2); }
+            100% { transform: scale(0.9); }
+        }
+
+        @keyframes doubleInhale {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1.3); }
+        }
+        
+        @keyframes smokerPurge {
+            0% { transform: scale(1); background-color: var(--smoker-purge); }
+            30% { transform: scale(1.3); background-color: #ff9e7d; }
+            70% { transform: scale(0.8); background-color: #ef476f; }
+            100% { transform: scale(1); background-color: var(--smoker-purge); }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        /* Floating particles for visual interest */
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.5);
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        /* Achievement badges */
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            background: var(--primary);
+            color: white;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+            vertical-align: middle;
+        }
+        
+        /* Stats panel */
+        .stats-panel {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-top: 1rem;
+            backdrop-filter: blur(5px);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .stat-card {
+            background: rgba(255,255,255,0.3);
+            border-radius: 8px;
+            padding: 0.75rem;
+            text-align: center;
+            border: 1px solid var(--glass-border);
+        }
+        
+        body.dark-mode .stat-card {
+            background: rgba(26, 26, 46, 0.5);
+        }
+        
+        .stat-card-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .stat-card-label {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <button class="settings-button" id="settingsButton" aria-label="Settings">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                </svg>
+            </button>
+            <h1>NeuroBreath 2.0</h1>
+            <div class="technique-title" id="currentTechniqueTitle">Box Breathing (4-4-4-4)</div>
+            <p class="description">Advanced breathing techniques for stress relief, lung health & optimal performance</p>
+            <p class="breathing-guidance">Follow the visual circle and timer for guided breathing</p>
+        </header>
+
+        <main class="main-content">
+            <div class="breathing-container">
+                <div class="breathing-circle">
+                    <div class="phase-text">Ready</div>
+                    <div class="timer">0:00</div>
+                </div>
+            </div>
+
+            <div class="progress-info">
+                <div class="round-info">Round 0 of 5</div>
+                <div class="progress-container">
+                    <div class="progress-fill"></div>
+                </div>
+            </div>
+            
+            <!-- Smoker-specific stats (visible when smoker mode is on) -->
+            <div class="stats-panel" id="smokerStatsPanel" style="display: none;">
+                <h4>Lung Recovery Progress</h4>
+                <div class="smoker-stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="tarCleared">0%</div>
+                        <div class="stat-label">Tar Cleared</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="co2Cleared">0%</div>
+                        <div class="stat-label">CO₂ Reduced</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="cravingsReduced">0%</div>
+                        <div class="stat-label">Cravings Down</div>
+                    </div>
+                </div>
+                <div class="smoker-progress">
+                    <div class="smoker-progress-fill" id="smokerProgressFill"></div>
+                    <div class="smoker-milestone" style="left: 20%;">
+                        <div class="smoker-milestone-label">1 Day</div>
+                    </div>
+                    <div class="smoker-milestone" style="left: 40%;">
+                        <div class="smoker-milestone-label">1 Week</div>
+                    </div>
+                    <div class="smoker-milestone" style="left: 60%;">
+                        <div class="smoker-milestone-label">1 Month</div>
+                    </div>
+                    <div class="smoker-milestone" style="left: 80%;">
+                        <div class="smoker-milestone-label">3 Months</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button class="btn-primary" id="startBtn">
+                    <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                    Start
+                </button>
+                <button class="btn-secondary" id="pauseBtn" disabled>
+                    <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="6" y="4" width="4" height="16"></rect>
+                        <rect x="14" y="4" width="4" height="16"></rect>
+                    </svg>
+                    Pause
+                </button>
+                <button class="btn-danger" id="resetBtn" disabled>
+                    <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="23 4 23 10 17 10"></polyline>
+                        <polyline points="1 20 1 14 7 14"></polyline>
+                        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                    </svg>
+                    Reset
+                </button>
+            </div>
+            
+            <div class="patient-tip">
+                <h5>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="16" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                    Health Tip
+                </h5>
+                <p>If you feel lightheaded, pause the exercise and breathe normally. Start with shorter durations and gradually increase as you become comfortable.</p>
+            </div>
+            
+            <!-- Stats panel for all users -->
+          <!-- Stats panel for all users -->
+<div class="stats-panel">
+    <h4>Your Breathing Stats</h4>
+    <div class="stats-grid">
+        <!-- Total Sessions Card -->
+        <div class="stat-card">
+            <div class="stat-card-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+            </div>
+            <div class="stat-card-value" id="totalSessions">0</div>
+            <div class="stat-card-label">Total Sessions</div>
+            <div class="stat-card-progress">
+                <div class="progress-bar" id="sessionsProgress"></div>
+            </div>
+        </div>
+
+        <!-- Minutes Practiced Card -->
+        <div class="stat-card">
+            <div class="stat-card-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+            </div>
+            <div class="stat-card-value" id="totalMinutes">0</div>
+            <div class="stat-card-label">Minutes Practiced</div>
+            <div class="stat-card-trend" id="minutesTrend"></div>
+        </div>
+
+        <!-- Day Streak Card -->
+        <div class="stat-card highlight">
+            <div class="stat-card-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                </svg>
+            </div>
+            <div class="stat-card-value" id="currentStreak">0</div>
+            <div class="stat-card-label">Day Streak 
+                <span class="badge" id="streakBadge"></span>
+            </div>
+            <div class="firework" id="streakFirework"></div>
+        </div>
+
+        <!-- Lung Capacity Card -->
+        <div class="stat-card">
+            <div class="stat-card-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 16.326A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"></path>
+                    <path d="M12 20v-6"></path>
+                    <path d="M12 8V2"></path>
+                </svg>
+            </div>
+            <div class="stat-card-value" id="lungCapacity">0%</div>
+            <div class="stat-card-label">Lung Capacity</div>
+            <div class="capacity-meter">
+                <div class="capacity-fill" id="capacityFill"></div>
+            </div>
+        </div>
+    </div>
+    
+  <!-- //  Detailed Stats Button -->
+    <button class="btn-stats-details" id="statsDetailsBtn">
+        View Detailed Statistics
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+    </button>
+</div>
+            </main>
+    
+            <footer>
+                <p>© 2023 NeuroBreath | Based on clinical neuroscience research</p>
+            </footer>
+        </div>
+    
+        <!-- Settings Overlay -->
+        <div class="settings-overlay" id="settingsOverlay">
+            <div class="settings-panel">
+                <button class="close-settings" id="closeSettings" aria-label="Close settings">×</button>
+                <h3>Breathing Technique Settings</h3>
+                
+                <div class="settings-section">
+                    <h4>Technique Selection</h4>
+                    <div class="settings-row">
+                        <label for="techniqueSelect">Choose Breathing Technique:</label>
+                        <select id="techniqueSelect">
+                            <option value="box">Box Breathing (4-4-4-4)</option>
+                            <option value="478">4-7-8 Relaxation Breathing</option>
+                            <option value="physiological">Physiological Sigh</option>
+                            <option value="wimhof">Wim Hof Method</option>
+                            <option value="coherent">Coherent Breathing</option>
+                            <option value="kapalbhati">Kapalbhati (Energizing)</option>
+                            <option value="smoker">Smoker's Lung Cleanse</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Box Breathing Settings -->
+                <div id="boxSettings" class="settings-section technique-settings">
+                    <h4>Box Breathing Parameters</h4>
+                    <div class="settings-row">
+                        <label for="boxInhale">Inhale Duration (seconds)</label>
+                        <input type="number" id="boxInhale" min="2" max="10" value="4">
+                    </div>
+                    <div class="settings-row">
+                        <label for="boxHold1">Hold After Inhale (seconds)</label>
+                        <input type="number" id="boxHold1" min="2" max="10" value="4">
+                    </div>
+                    <div class="settings-row">
+                        <label for="boxExhale">Exhale Duration (seconds)</label>
+                        <input type="number" id="boxExhale" min="2" max="10" value="4">
+                    </div>
+                    <div class="settings-row">
+                        <label for="boxHold2">Hold After Exhale (seconds)</label>
+                        <input type="number" id="boxHold2" min="2" max="10" value="4">
+                    </div>
+                </div>
+                
+                <!-- 4-7-8 Breathing Settings -->
+                <div id="physiologicalSettings" class="settings-section technique-settings" style="display:none">
+                    <h4>Physiological Sigh Parameters</h4>
+                    <div class="settings-row">
+                        <label for="physioInhale1">First Inhale (seconds)</label>
+                        <input type="number" id="physioInhale1" min="1" max="3" value="1">
+                    </div>
+                    <div class="settings-row">
+                        <label for="physioInhale2">Second Inhale (seconds)</label>
+                        <input type="number" id="physioInhale2" min="1" max="3" value="1">
+                    </div>
+                    <div class="settings-row">
+                        <label for="physioExhale">Exhale Duration (seconds)</label>
+                        <input type="number" id="physioExhale" min="3" max="10" value="6">
+                    </div>
+                </div>
+                
+                <!-- Wim Hof Settings -->
+                <div id="wimhofSettings" class="settings-section technique-settings" style="display:none">
+                    <h4>Wim Hof Method Parameters</h4>
+                    <div class="settings-row">
+                        <label for="wimhofBreaths">Breaths per Round</label>
+                        <input type="number" id="wimhofBreaths" min="10" max="50" value="30">
+                    </div>
+                    <div class="settings-row">
+                        <label for="wimhofHold">Hold After Exhale (seconds)</label>
+                        <input type="number" id="wimhofHold" min="15" max="120" value="60">
+                    </div>
+                </div>
+    
+                <!-- Coherent Breathing Settings -->
+                <div id="coherentSettings" class="settings-section technique-settings" style="display:none">
+                    <h4>Coherent Breathing Parameters</h4>
+                    <div class="settings-row">
+                        <label for="coherentInhale">Inhale Duration (seconds)</label>
+                        <input type="number" id="coherentInhale" min="3" max="10" value="5">
+                    </div>
+                    <div class="settings-row">
+                        <label for="coherentExhale">Exhale Duration (seconds)</label>
+                        <input type="number" id="coherentExhale" min="3" max="10" value="5">
+                    </div>
+                </div>
+    
+                <!-- Kapalbhati Settings -->
+                <div id="kapalbhatiSettings" class="settings-section technique-settings" style="display:none">
+                    <h4>Kapalbhati Parameters</h4>
+                    <div class="settings-row">
+                        <label for="kapalbhatiReps">Repetitions per Round</label>
+                        <input type="number" id="kapalbhatiReps" min="20" max="100" value="30">
+                    </div>
+                    <div class="settings-row">
+                        <label for="kapalbhatiRounds">Number of Rounds</label>
+                        <input type="number" id="kapalbhatiRounds" min="1" max="10" value="3">
+                    </div>
+                </div>
+                
+                <!-- Smoker's Technique Settings -->
+                <div id="smokerSettings" class="settings-section technique-settings" style="display:none">
+                    <h4>Smoker's Lung Cleanse Parameters</h4>
+                    <div class="settings-row">
+                        <label for="smokerInhale">Deep Inhale (seconds)</label>
+                        <input type="number" id="smokerInhale" min="3" max="8" value="5">
+                    </div>
+                    <div class="settings-row">
+                        <label for="smokerHold">Hold (seconds)</label>
+                        <input type="number" id="smokerHold" min="2" max="10" value="4">
+                    </div>
+                    <div class="settings-row">
+                        <label for="smokerExhale">Forceful Exhale (seconds)</label>
+                        <input type="number" id="smokerExhale" min="4" max="12" value="8">
+                    </div>
+                    <div class="settings-row">
+                        <label for="smokerCough">Cough After (seconds)</label>
+                        <input type="number" id="smokerCough" min="0" max="5" value="2">
+                    </div>
+                </div>
+                
+                <div class="settings-section">
+                    <h4>Session Settings</h4>
+                    <div class="settings-row">
+                        <label for="totalRounds">Total Rounds</label>
+                        <input type="number" id="totalRounds" min="1" max="20" value="5">
+                    </div>
+                </div>
+                
+                <div class="settings-section">
+                    <h4>Preferences</h4>
+                    <div class="settings-row">
+                        <div class="toggle-container">
+                            <span class="toggle-label">Enable Guidance Sounds</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="soundToggle" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="settings-row">
+                        <div class="toggle-container">
+                            <span class="toggle-label">Dark Mode</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="darkModeToggle">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="settings-row">
+                        <div class="toggle-container">
+                            <span class="toggle-label">Smoker Mode</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="smokerModeToggle">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="settings-row">
+                        <div class="toggle-container">
+                            <span class="toggle-label">Haptic Feedback</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="hapticToggle" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="technique-info" id="techniqueInfo">
+                    <!-- Technique information will be dynamically inserted here -->
+                </div>
+                <footer>
+                    <p>© 2023 NeuroBreath | Based on clinical neuroscience research</p>
+                    <p class="creator">Built by Ritik Kr. Gupta, NIT Silchar CSE 2nd year student | Simplifying health through breath.</p>
+                </footer>
+            </div>
+        </div>
+    
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // DOM Elements
+                const breathingCircle = document.querySelector('.breathing-circle');
+                const phaseText = document.querySelector('.phase-text');
+                const timerDisplay = document.querySelector('.timer');
+                const roundInfo = document.querySelector('.round-info');
+                const progressFill = document.querySelector('.progress-fill');
+                const startBtn = document.getElementById('startBtn');
+                const pauseBtn = document.getElementById('pauseBtn');
+                const resetBtn = document.getElementById('resetBtn');
+                const settingsButton = document.getElementById('settingsButton');
+                const settingsOverlay = document.getElementById('settingsOverlay');
+                const closeSettings = document.getElementById('closeSettings');
+                const soundToggle = document.getElementById('soundToggle');
+                const darkModeToggle = document.getElementById('darkModeToggle');
+                const smokerModeToggle = document.getElementById('smokerModeToggle');
+                const hapticToggle = document.getElementById('hapticToggle');
+                const techniqueSelect = document.getElementById('techniqueSelect');
+                const techniqueInfo = document.getElementById('techniqueInfo');
+                const currentTechniqueTitle = document.getElementById('currentTechniqueTitle');
+                const body = document.body;
+                const smokerStatsPanel = document.getElementById('smokerStatsPanel');
+                const tarCleared = document.getElementById('tarCleared');
+                const co2Cleared = document.getElementById('co2Cleared');
+                const cravingsReduced = document.getElementById('cravingsReduced');
+                const smokerProgressFill = document.getElementById('smokerProgressFill');
+                const totalSessions = document.getElementById('totalSessions');
+                const totalMinutes = document.getElementById('totalMinutes');
+                const currentStreak = document.getElementById('currentStreak');
+                const lungCapacity = document.getElementById('lungCapacity');
+    
+                // Technique settings panels
+                const techniqueSettings = {
+                    box: document.getElementById('boxSettings'),
+                    physiological: document.getElementById('physiologicalSettings'),
+                    wimhof: document.getElementById('wimhofSettings'),
+                    coherent: document.getElementById('coherentSettings'),
+                    kapalbhati: document.getElementById('kapalbhatiSettings'),
+                    smoker: document.getElementById('smokerSettings')
+                };
+    
+                // Breathing techniques data
+                const techniques = {
+                    box: {
+                        name: "Box Breathing (4-4-4-4)",
+                        description: "A military-grade stress reduction technique that balances the autonomic nervous system by equalizing all phases of breathing. This method is used by Navy SEALs to remain calm in high-stress situations.",
+                        benefits: "Reduces cortisol levels, improves focus and concentration, enhances emotional regulation, lowers blood pressure, improves sleep quality",
+                        research: "A 2017 study in the Journal of Clinical Psychology found that box breathing significantly reduced cortisol levels and improved cognitive performance in high-stress environments.",
+                        steps: [
+                            "Sit upright with relaxed shoulders and hands resting comfortably",
+                            "Inhale deeply through your nose for 4 seconds (feel your diaphragm expand)",
+                            "Hold your breath with lungs full for 4 seconds (without straining)",
+                            "Exhale slowly and completely through pursed lips for 4 seconds (engage core slightly)",
+                            "Hold your lungs empty for 4 seconds before beginning the next cycle",
+                            "Repeat for the desired number of rounds"
+                        ],
+                        tip: "Visualize tracing a square with your breath - each side represents one phase (inhale, hold, exhale, hold)",
+                        cautions: "Avoid if you have low blood pressure or feel lightheaded. Reduce hold times if uncomfortable.",
+                        phases: ["inhale", "holdAfterInhale", "exhale", "holdAfterExhale"],
+                        defaults: [4, 4, 4, 4]
+                    },
+                    "478": {
+                        name: "4-7-8 Relaxation Breathing",
+                        description: "Developed by Dr. Andrew Weil, this technique emphasizes prolonged exhalation to activate the parasympathetic nervous system, creating a natural tranquilizing effect.",
+                        benefits: "Reduces anxiety, helps induce sleep, manages panic attacks, lowers heart rate, promotes relaxation",
+                        research: "Harvard Medical School recommends this technique for insomnia and stress reduction (Harvard Health Publishing, 2020). Clinical studies show it can reduce anxiety by 65% when practiced regularly.",
+                        steps: [
+                            "Place the tip of your tongue behind your upper front teeth and keep it there throughout",
+                            "Completely exhale through your mouth, making a 'whoosh' sound",
+                            "Close your mouth and inhale quietly through your nose for 4 seconds",
+                            "Hold your breath for 7 seconds",
+                            "Exhale completely through your mouth for 8 seconds (making the 'whoosh' sound)",
+                            "This completes one breath cycle. Repeat for 3-4 cycles when starting",
+                            "Gradually work up to 8 cycles as you become comfortable"
+                        ],
+                        tip: "The extended exhale is key - it triggers the vagus nerve and parasympathetic response",
+                        cautions: "Start with only 2-3 cycles to avoid dizziness. Don't practice while driving.",
+                        phases: ["inhale", "holdAfterInhale", "exhale"],
+                        defaults: [4, 7, 8]
+                    },
+                    physiological: {
+                        name: "Physiological Sigh",
+                        description: "Discovered by Stanford neuroscientist Dr. Andrew Huberman, this is the fastest physiological method to reduce stress. It mimics natural sighing - your body's built-in stress reset mechanism.",
+                        benefits: "Instant stress relief (works in 30-60 seconds), rapidly oxygenates blood, reduces CO₂ buildup, quickly calms the nervous system",
+                        research: "Cell Reports Medicine (2022) showed this technique is the fastest way to reduce stress by rapidly oxygenating blood and resetting breathing patterns. It's 2-3x more effective than mindfulness for acute stress.",
+                        steps: [
+                            "Sit or stand with good posture (can be done anywhere)",
+                            "Take a first normal inhale through your nose (1 second)",
+                            "Immediately take a second deeper inhale to fully inflate your lungs (1 second)",
+                            "Exhale slowly and completely through your mouth (6+ seconds - the longer the better)",
+                            "Allow your breathing to normalize naturally for a few breaths",
+                            "Repeat 2-3 times as needed throughout the day"
+                        ],
+                        tip: "This is nature's reset button - use it anytime you feel stressed, anxious, or overwhelmed",
+                        cautions: "Can be done safely anytime, anywhere. No known contraindications.",
+                        phases: ["doubleInhale", "exhale"],
+                        defaults: [1, 1, 6]
+                    },
+                    wimhof: {
+                        name: "Wim Hof Method",
+                        description: "Developed by 'The Iceman' Wim Hof, this powerful technique combines controlled hyperventilation with breath retention to boost energy, immune function, and stress resilience.",
+                        benefits: "Boosts energy, enhances cold tolerance, strengthens immune system, reduces inflammation, increases willpower",
+                        research: "PNAS (2014) study showed practitioners could voluntarily modulate their immune response. Regular practice increases adrenaline and anti-inflammatory cytokines.",
+                        steps: [
+                            "Sit comfortably with straight back (never practice lying down or in water)",
+                            "Take 30-40 deep breaths in this pattern:",
+                            "  • Powerful inhale through nose (1 second - fill lungs completely)",
+                            "  • Passive exhale through mouth (1 second - just let go)",
+                            "After last exhale, hold your breath for as long as comfortable (60+ seconds)",
+                            "When you need to breathe, take one deep recovery breath and hold for 15 seconds",
+                            "Repeat for 3-4 rounds",
+                            "For advanced practice: Combine with cold exposure after completing breathing"
+                        ],
+                        tip: "The breath retention is where the magic happens - your body enters a unique metabolic state",
+                        cautions: "Never practice in water or while driving. Avoid if pregnant, have heart conditions, or epilepsy.",
+                        phases: ["hyperventilation", "holdAfterExhale"],
+                        defaults: [30, 60]
+                    },
+                    coherent: {
+                        name: "Coherent Breathing",
+                        description: "Also called resonant breathing, this 5-5 rhythm optimizes heart rate variability (HRV) - a key marker of emotional balance and physiological resilience.",
+                        benefits: "Improves emotional regulation, reduces PTSD symptoms, optimizes HRV, enhances heart-brain connection, balances autonomic nervous system",
+                        research: "NIH research (PMC5575449) shows coherent breathing improves heart-brain connection better than box breathing. Regular practice can increase HRV by 20-30%.",
+                        steps: [
+                            "Sit upright with relaxed posture (can also lie down)",
+                            "Inhale through your nose for 5 seconds (smooth and controlled)",
+                            "Exhale through your nose for 5 seconds (equal duration to inhale)",
+                            "Maintain rhythm like a pendulum - no pauses between phases",
+                            "Focus on making breath waves perfectly even in duration and intensity",
+                            "Continue for 5-20 minutes daily (ideal before meditation or sleep)"
+                        ],
+                        tip: "Best practiced with eyes closed to enhance interoception (body awareness)",
+                        cautions: "Can be done for extended periods safely. Reduce time if lightheaded.",
+                        phases: ["inhale", "exhale"],
+                        defaults: [5, 5]
+                    },
+                    kapalbhati: {
+                        name: "Kapalbhati (Energizing Breath)",
+                        description: "A yogic breathing technique from ancient India that rapidly oxygenates the brain through forceful exhalations, traditionally used to energize and cleanse.",
+                        benefits: "Morning energy boost, mental clarity, detoxification, strengthens core, improves circulation, warms the body",
+                        research: "International Journal of Yoga (2012) showed kapalbhati increases alertness and oxygen saturation. Regular practice improves lung capacity by 15-20%.",
+                        steps: [
+                            "Sit cross-legged with straight spine (Vajrasana or Sukhasana recommended)",
+                            "Place hands on knees with palms up (Gyan mudra optional)",
+                            "Take a normal inhale through your nose",
+                            "Forcefully exhale through your nose by contracting abdominal muscles (1 second)",
+                            "Let the inhale happen passively (no effort)",
+                            "Maintain 1 exhale-per-second rhythm (start slow if new)",
+                            "Begin with 30 reps, gradually increase to 100+",
+                            "After final exhale, take a deep inhale and hold briefly",
+                            "Rest with normal breathing for 30 seconds between rounds"
+                        ],
+                        tip: "Keep face and shoulders relaxed - only your abdomen should move (like bellows pumping)",
+                        cautions: "Avoid if pregnant, have high BP, hernia, or experience dizziness. Not recommended before sleep.",
+                        phases: ["forcefulExhale"],
+                        defaults: [30, 3]
+                    },
+                    smoker: {
+                        name: "Smoker's Lung Cleanse",
+                        description: "Specially designed for smokers and ex-smokers, this technique helps clear tar and toxins from lungs while reducing nicotine cravings and improving oxygenation.",
+                        benefits: "Clears tar buildup, reduces cravings, improves lung capacity, enhances oxygen absorption, speeds up lung tissue repair",
+                        research: "American Journal of Respiratory and Critical Care Medicine (2018) found similar breathing techniques increased lung function by 30% in smokers after 8 weeks of practice.",
+                        steps: [
+                            "Sit upright with shoulders relaxed",
+                            "Take a deep, slow inhale through your nose (5 seconds - fill lungs completely)",
+                            "Hold your breath briefly (4 seconds - allows oxygen absorption)",
+                            "Exhale forcefully through pursed lips (8 seconds - engages diaphragm)",
+                            "After full exhale, give 2-3 gentle coughs to loosen mucus",
+                            "Rest with normal breathing for 30 seconds",
+                            "Repeat for 5-10 rounds daily"
+                        ],
+                        tip: "Practice in the morning to clear overnight mucus buildup. Drink warm water after to help flush toxins.",
+                        cautions: "Stop if you feel dizzy. Don't force coughs - let them come naturally.",
+                        phases: ["inhale", "holdAfterInhale", "exhale", "cough"],
+                        defaults: [5, 4, 8, 2]
+                    }
+                };
+    
+                // App state
+                let state = {
+                    currentTechnique: "box",
+                    currentPhase: null,
+                    currentRound: 0,
+                    timeRemaining: 0,
+                    totalTime: 0,
+                    timerInterval: null,
+                    isRunning: false,
+                    isPaused: false,
+                    wimhofCount: 0,
+                    kapalbhatiCount: 0,
+                    smokerCount: 0,
+                    animationInterval: null,
+                    currentCycle: 0,
+                    totalCycles: 0,
+                    lastSessionDate: null,
+                    stats: {
+                        totalSessions: 0,
+                        totalMinutes: 0,
+                        currentStreak: 0,
+                        lungCapacity: 0,
+                        tarCleared: 0,
+                        co2Cleared: 0,
+                        cravingsReduced: 0
+                    }
+                };
+    
+                // Settings
+                let settings = {
+                    soundEnabled: true,
+                    darkMode: false,
+                    smokerMode: false,
+                    hapticFeedback: true,
+                    techniques: {
+                        box: [4, 4, 4, 4],
+                        "478": [4, 7, 8],
+                        physiological: [1, 1, 6],
+                        wimhof: [30, 60],
+                        coherent: [5, 5],
+                        kapalbhati: [30, 3],
+                        smoker: [5, 4, 8, 2]
+                    },
+                    totalRounds: 5
+                };
+    
+                // Audio elements
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                let currentSound = null;
+                
+                // Create floating particles
+                function createParticles() {
+                    const colors = ['#3a86ff', '#8338ec', '#06d6a0', '#ffbe0b', '#ef476f'];
+                    
+                    for (let i = 0; i < 20; i++) {
+                        const particle = document.createElement('div');
+                        particle.classList.add('particle');
+                        
+                        // Random size between 2px and 6px
+                        const size = Math.random() * 4 + 2;
+                        particle.style.width = `${size}px`;
+                        particle.style.height = `${size}px`;
+                        
+                        // Random position
+                        particle.style.left = `${Math.random() * 100}vw`;
+                        particle.style.top = `${Math.random() * 100}vh`;
+                        
+                        // Random color
+                        particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                        
+                        // Random animation
+                        const duration = Math.random() * 20 + 10;
+                        particle.style.animation = `float ${duration}s linear infinite`;
+                        
+                        document.body.appendChild(particle);
+                        
+                        // Animate particles
+                        animateParticle(particle, duration);
+                    }
+                }
+                
+                function animateParticle(particle, duration) {
+                    const startX = Math.random() * 100;
+                    const startY = Math.random() * 100;
+                    const endX = startX + (Math.random() * 20 - 10);
+                    const endY = startY + (Math.random() * 20 - 10);
+                    
+                    particle.style.left = `${startX}vw`;
+                    particle.style.top = `${startY}vh`;
+                    
+                    const keyframes = [
+                        { transform: `translate(0, 0)`, opacity: 0.5 },
+                        { transform: `translate(${endX - startX}vw, ${endY - startY}vh)`, opacity: 0.8 },
+                        { transform: `translate(0, 0)`, opacity: 0.5 }
+                    ];
+                    
+                    const options = {
+                        duration: duration * 1000,
+                        iterations: Infinity
+                    };
+                    
+                    particle.animate(keyframes, options);
+                }
+                
+                // Play sound with optional haptic feedback
+                function playSound(frequency, duration, type = "sine") {
+                    if (!settings.soundEnabled) return;
+                    
+                    if (currentSound) {
+                        currentSound.stop();
+                    }
+                    
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.type = type;
+                    oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+                    gainNode.gain.setValueAtTime(0.5, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + duration);
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.start();
+                    oscillator.stop(audioContext.currentTime + duration);
+                    
+                    currentSound = oscillator;
+                    
+                    // Add haptic feedback if enabled
+                    if (settings.hapticFeedback && navigator.vibrate) {
+                        navigator.vibrate(100);
+                    }
+                }
+    
+                // Initialize app
+                function init() {
+                    loadSettings();
+                    setupEventListeners();
+                    updateTechniqueInfo();
+                    updateTechniqueTitle();
+                    showTechniqueSettings(state.currentTechnique);
+                    updateStatsDisplay();
+                    createParticles();
+                    
+                    // Show smoker stats if smoker mode is on
+                    smokerStatsPanel.style.display = settings.smokerMode ? 'block' : 'none';
+                }
+    
+                // Load settings from localStorage
+                function loadSettings() {
+                    const savedSettings = localStorage.getItem('neuroBreathSettings');
+                    if (savedSettings) {
+                        const parsed = JSON.parse(savedSettings);
+                        settings = {...settings, ...parsed.settings};
+                        state.stats = {...state.stats, ...parsed.stats};
+                        
+                        // Apply UI settings
+                        soundToggle.checked = settings.soundEnabled;
+                        darkModeToggle.checked = settings.darkMode;
+                        smokerModeToggle.checked = settings.smokerMode;
+                        hapticToggle.checked = settings.hapticFeedback;
+                        techniqueSelect.value = state.currentTechnique;
+                        document.getElementById('totalRounds').value = settings.totalRounds;
+                        
+                        // Apply technique settings
+                        document.getElementById('boxInhale').value = settings.techniques.box[0];
+                        document.getElementById('boxHold1').value = settings.techniques.box[1];
+                        document.getElementById('boxExhale').value = settings.techniques.box[2];
+                        document.getElementById('boxHold2').value = settings.techniques.box[3];
+                        document.getElementById('physioInhale1').value = settings.techniques.physiological[0];
+                        document.getElementById('physioInhale2').value = settings.techniques.physiological[1];
+                        document.getElementById('physioExhale').value = settings.techniques.physiological[2];
+                        document.getElementById('wimhofBreaths').value = settings.techniques.wimhof[0];
+                        document.getElementById('wimhofHold').value = settings.techniques.wimhof[1];
+                        document.getElementById('coherentInhale').value = settings.techniques.coherent[0];
+                        document.getElementById('coherentExhale').value = settings.techniques.coherent[1];
+                        document.getElementById('kapalbhatiReps').value = settings.techniques.kapalbhati[0];
+                        document.getElementById('kapalbhatiRounds').value = settings.techniques.kapalbhati[1];
+                        document.getElementById('smokerInhale').value = settings.techniques.smoker[0];
+                        document.getElementById('smokerHold').value = settings.techniques.smoker[1];
+                        document.getElementById('smokerExhale').value = settings.techniques.smoker[2];
+                        document.getElementById('smokerCough').value = settings.techniques.smoker[3];
+                        
+                        // Apply dark mode if enabled
+                        if (settings.darkMode) {
+                            body.classList.add('dark-mode');
+                        }
+                        
+                        // Check streak
+                        checkStreak();
+                    }
+                }
+                
+                // Check and update streak
+                function checkStreak() {
+                    if (!state.stats.lastSessionDate) return;
+                    
+                    const lastSession = new Date(state.stats.lastSessionDate);
+                    const today = new Date();
+                    const yesterday = new Date(today);
+                    yesterday.setDate(yesterday.getDate() - 1);
+                    
+                    // Reset streak if last session was more than 1 day ago
+                    if (lastSession.toDateString() === yesterday.toDateString()) {
+                        state.stats.currentStreak++;
+                    } else if (lastSession.toDateString() !== today.toDateString()) {
+                        state.stats.currentStreak = 0;
+                    }
+                    
+                    updateStatsDisplay();
+                }
+    
+                // Save settings to localStorage
+                function saveSettings() {
+                    // Update settings from form
+                    settings.soundEnabled = soundToggle.checked;
+                    settings.darkMode = darkModeToggle.checked;
+                    settings.smokerMode = smokerModeToggle.checked;
+                    settings.hapticFeedback = hapticToggle.checked;
+                    settings.totalRounds = parseInt(document.getElementById('totalRounds').value);
+                    
+                    // Update technique settings
+                    settings.techniques.box = [
+                        parseInt(document.getElementById('boxInhale').value),
+                        parseInt(document.getElementById('boxHold1').value),
+                        parseInt(document.getElementById('boxExhale').value),
+                        parseInt(document.getElementById('boxHold2').value)
+                    ];
+                    
+                    settings.techniques.physiological = [
+                        parseInt(document.getElementById('physioInhale1').value),
+                        parseInt(document.getElementById('physioInhale2').value),
+                        parseInt(document.getElementById('physioExhale').value)
+                    ];
+                    
+                    settings.techniques.wimhof = [
+                        parseInt(document.getElementById('wimhofBreaths').value),
+                        parseInt(document.getElementById('wimhofHold').value)
+                    ];
+                    
+                    settings.techniques.coherent = [
+                        parseInt(document.getElementById('coherentInhale').value),
+                        parseInt(document.getElementById('coherentExhale').value)
+                    ];
+                    
+                    settings.techniques.kapalbhati = [
+                        parseInt(document.getElementById('kapalbhatiReps').value),
+                        parseInt(document.getElementById('kapalbhatiRounds').value)
+                    ];
+                    
+                    settings.techniques.smoker = [
+                        parseInt(document.getElementById('smokerInhale').value),
+                        parseInt(document.getElementById('smokerHold').value),
+                        parseInt(document.getElementById('smokerExhale').value),
+                        parseInt(document.getElementById('smokerCough').value)
+                    ];
+                    
+                    localStorage.setItem('neuroBreathSettings', JSON.stringify({
+                        settings: settings,
+                        stats: state.stats
+                    }));
+                    
+                    // Show/hide smoker stats based on mode
+                    smokerStatsPanel.style.display = settings.smokerMode ? 'block' : 'none';
+                }
+                
+                // Update stats display
+                // function updateStatsDisplay() {
+                //     totalSessions.textContent = state.stats.totalSessions;
+                //     totalMinutes.textContent = state.stats.totalMinutes;
+                //     currentStreak.textContent = state.stats.currentStreak;
+                //     lungCapacity.textContent = `${state.stats.lungCapacity}%`;
+                    
+                //     if (settings.smokerMode) {
+                //         tarCleared.textContent = `${state.stats.tarCleared}%`;
+                //         co2Cleared.textContent = `${state.stats.co2Cleared}%`;
+                //         cravingsReduced.textContent = `${state.stats.cravingsReduced}%`;
+                //         smokerProgressFill.style.width = `${state.stats.tarCleared}%`;
+                //     }
+                // }
+                // Update stats display function
+function updateStatsDisplay() {
+    // Update the values
+    document.getElementById('totalSessions').textContent = state.stats.totalSessions;
+    document.getElementById('totalMinutes').textContent = state.stats.totalMinutes;
+    document.getElementById('currentStreak').textContent = state.stats.currentStreak;
+    document.getElementById('lungCapacity').textContent = `${state.stats.lungCapacity}%`;
+    
+    // Update progress bars
+    document.getElementById('sessionsProgress').style.width = `${Math.min(100, state.stats.totalSessions)}%`;
+    document.getElementById('capacityFill').style.width = `${state.stats.lungCapacity}%`;
+    
+    // Update streak badge
+    const streakBadge = document.getElementById('streakBadge');
+    if (state.stats.currentStreak >= 3) {
+        streakBadge.style.display = 'inline-block';
+        streakBadge.textContent = state.stats.currentStreak >= 7 ? '🔥' : '✨';
+    } else {
+        streakBadge.style.display = 'none';
+    }
+    
+    // Add firework animation for new streaks
+    if (state.stats.currentStreak > state.prevStreak) {
+        celebrateStreak();
+    }
+    state.prevStreak = state.stats.currentStreak;
+}
+
+// Streak celebration animation
+function celebrateStreak() {
+    const fireworkContainer = document.getElementById('streakFirework');
+    fireworkContainer.innerHTML = '';
+    
+    for (let i = 0; i < 20; i++) {
+        const particle = document.createElement('div');
+        particle.classList.add('firework-particle');
+        particle.style.left = `${50 + (Math.random() * 20 - 10)}%`;
+        particle.style.top = `${50 + (Math.random() * 20 - 10)}%`;
+        particle.style.backgroundColor = `hsl(${Math.random() * 60 + 20}, 100%, 50%)`;
+        particle.style.animationDuration = `${Math.random() * 0.6 + 0.4}s`;
+        fireworkContainer.appendChild(particle);
+        
+        // Remove after animation
+        setTimeout(() => {
+            particle.remove();
+        }, 1000);
+    }
+}
+
+// Toggle detailed stats view
+document.getElementById('statsDetailsBtn').addEventListener('click', function() {
+    this.classList.toggle('active');
+    // You would implement the detailed stats view toggle here
+    console.log('Show detailed stats');
+});
+
+// Add this to your CSS for the firework particles
+/*
+.firework-particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    opacity: 0;
+    animation: firework 1s ease-out forwards;
+}
+
+@keyframes firework {
+    0% { transform: translate(0, 0); opacity: 1; }
+    100% { transform: translate(var(--tx), var(--ty)); opacity: 0; }
+}
+*/
+
+
+
+
+
+                // Update the technique title display
+                function updateTechniqueTitle() {
+                    const technique = techniques[state.currentTechnique];
+                    currentTechniqueTitle.textContent = technique.name;
+                }
+    
+                // Set up event listeners
+                function setupEventListeners() {
+                    startBtn.addEventListener('click', startExercise);
+                    pauseBtn.addEventListener('click', pauseExercise);
+                    resetBtn.addEventListener('click', resetExercise);
+                    settingsButton.addEventListener('click', toggleSettingsPanel);
+                    closeSettings.addEventListener('click', toggleSettingsPanel);
+                    
+                    // Settings change listeners
+                    soundToggle.addEventListener('change', function() {
+                        settings.soundEnabled = this.checked;
+                        saveSettings();
+                    });
+                    
+                    darkModeToggle.addEventListener('change', function() {
+                        settings.darkMode = this.checked;
+                        saveSettings();
+                        body.classList.toggle('dark-mode', this.checked);
+                    });
+                    
+                    smokerModeToggle.addEventListener('change', function() {
+                        settings.smokerMode = this.checked;
+                        saveSettings();
+                        if (this.checked) {
+                            techniqueSelect.value = 'smoker';
+                            state.currentTechnique = 'smoker';
+                            showTechniqueSettings('smoker');
+                            updateTechniqueInfo();
+                            updateTechniqueTitle();
+                        }
+                    });
+                    
+                    hapticToggle.addEventListener('change', function() {
+                        settings.hapticFeedback = this.checked;
+                        saveSettings();
+                    });
+                    
+                    techniqueSelect.addEventListener('change', function() {
+                        state.currentTechnique = this.value;
+                        showTechniqueSettings(this.value);
+                        updateTechniqueInfo();
+                        updateTechniqueTitle();
+                        resetExercise();
+                        saveSettings();
+                    });
+                    
+                    // Technique settings change listeners
+                    document.getElementById('boxInhale').addEventListener('change', saveSettings);
+                    document.getElementById('boxHold1').addEventListener('change', saveSettings);
+                    document.getElementById('boxExhale').addEventListener('change', saveSettings);
+                    document.getElementById('boxHold2').addEventListener('change', saveSettings);
+                    document.getElementById('physioInhale1').addEventListener('change', saveSettings);
+                    document.getElementById('physioInhale2').addEventListener('change', saveSettings);
+                    document.getElementById('physioExhale').addEventListener('change', saveSettings);
+                    document.getElementById('wimhofBreaths').addEventListener('change', saveSettings);
+                    document.getElementById('wimhofHold').addEventListener('change', saveSettings);
+                    document.getElementById('coherentInhale').addEventListener('change', saveSettings);
+                    document.getElementById('coherentExhale').addEventListener('change', saveSettings);
+                    document.getElementById('kapalbhatiReps').addEventListener('change', saveSettings);
+                    document.getElementById('kapalbhatiRounds').addEventListener('change', saveSettings);
+                    document.getElementById('smokerInhale').addEventListener('change', saveSettings);
+                    document.getElementById('smokerHold').addEventListener('change', saveSettings);
+                    document.getElementById('smokerExhale').addEventListener('change', saveSettings);
+                    document.getElementById('smokerCough').addEventListener('change', saveSettings);
+                    document.getElementById('totalRounds').addEventListener('change', saveSettings);
+                }
+    
+                // Toggle settings panel
+                function toggleSettingsPanel() {
+                    settingsOverlay.classList.toggle('visible');
+                    document.body.style.overflow = settingsOverlay.classList.contains('visible') ? 'hidden' : '';
+                }
+    
+                // Show settings for the selected technique
+                function showTechniqueSettings(technique) {
+                    // Hide all technique settings first
+                    Object.values(techniqueSettings).forEach(panel => {
+                        panel.style.display = 'none';
+                    });
+                    
+                    // Show the selected one
+                    if (techniqueSettings[technique]) {
+                        techniqueSettings[technique].style.display = 'block';
+                    }
+                }
+    
+                // Update technique info display
+                function updateTechniqueInfo() {
+                    const technique = techniques[state.currentTechnique];
+                    let stepsHTML = '';
+                    
+                    if (technique.steps) {
+                        stepsHTML = `<div class="technique-steps">
+                            <h5>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M12 2v4"></path>
+                                    <path d="m16 6-4-4-4 4"></path>
+                                    <path d="M18 20a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2"></path>
+                                    <path d="M12 22v-4"></path>
+                                    <path d="m8 18 4 4 4-4"></path>
+                                </svg>
+                                How to Perform:
+                            </h5>
+                            <ol>`;
+                        
+                        technique.steps.forEach(step => {
+                            stepsHTML += `<li>${step}</li>`;
+                        });
+                        
+                        stepsHTML += `</ol>`;
+                        
+                        if (technique.tip) {
+                            stepsHTML += `<p class="technique-tip">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <path d="M12 16v-4"></path>
+                                    <path d="M12 8h.01"></path>
+                                </svg>
+                                <strong>Pro Tip:</strong> ${technique.tip}
+                            </p>`;
+                        }
+                        
+                        stepsHTML += `</div>`;
+                    }
+                    
+                    // Add smoker-specific info if in smoker mode
+                    let smokerHTML = '';
+                    if (state.currentTechnique === 'smoker') {
+                        smokerHTML = `
+                            <div class="technique-benefits">
+                                <h5>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                        <path d="m9 11 3 3L22 4"></path>
+                                    </svg>
+                                    For Smokers:
+                                </h5>
+                                <p>This technique is specially designed to help smokers:
+                                <ul>
+                                    <li>Clear tar and toxins from your lungs</li>
+                                    <li>Reduce nicotine cravings by oxygenating your blood</li>
+                                    <li>Repair lung tissue damage caused by smoking</li>
+                                    <li>Improve oxygen absorption capacity</li>
+                                    <li>Strengthen your respiratory muscles</li>
+                                </ul>
+                                </p>
+                            </div>
+                        `;
+                    }
+                    
+                    let html = `
+                        <h4>${technique.name}</h4>
+                        <p>${technique.description}</p>
+                        
+                        <div class="technique-benefits">
+                            <h5>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                    <path d="m9 11 3 3L22 4"></path>
+                                </svg>
+                                Benefits:
+                            </h5>
+                            <p>${technique.benefits}</p>
+                        </div>
+                        
+                        ${smokerHTML}
+                        
+                        ${stepsHTML}
+                        
+                        <div class="technique-cautions">
+                            <h5>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                                    <path d="M12 9v4"></path>
+                                    <path d="M12 17h.01"></path>
+                                </svg>
+                                Cautions:
+                            </h5>
+                            <p>${technique.cautions}</p>
+                        </div>
+                        
+                        <div class="patient-tip">
+                            <h5>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                                </svg>
+                                Health Tip
+                            </h5>
+                            <p>Start with shorter durations and fewer rounds if you're new to breathing exercises. If you feel lightheaded, pause and breathe normally.</p>
+                        </div>
+                        
+                        <p class="technique-research">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path>
+                            </svg>
+                            <strong>Research:</strong> ${technique.research}
+                        </p>
+                    `;
+                    
+                    techniqueInfo.innerHTML = html;
+                }
+    
+                // Start the exercise
+                function startExercise() {
+                    if (state.isRunning && !state.isPaused) return;
+                    
+                    // If paused, resume from current state
+                    if (state.isPaused) {
+                        state.isPaused = false;
+                        state.isRunning = true;
+                        
+                        // Resume animation
+                        const computedStyle = window.getComputedStyle(breathingCircle);
+                        const animationName = computedStyle.getPropertyValue('animation-name');
+                        if (animationName !== 'none') {
+                            breathingCircle.style.animationPlayState = 'running';
+                        }
+                        
+                        // Restart timer
+                        state.timerInterval = setInterval(function() {
+                            state.timeRemaining--;
+                            updateTimerDisplay();
+                            
+                            if (state.timeRemaining <= 0) {
+                                clearInterval(state.timerInterval);
+                                transitionAfterPhase();
+                            }
+                        }, 1000);
+                        
+                        startBtn.disabled = true;
+                        pauseBtn.disabled = false;
+                        resetBtn.disabled = false;
+                        
+                        return;
+                    }
+                    
+                    // New session
+                    state.isRunning = true;
+                    state.currentRound = 1;
+                    state.totalTime = calculateTotalTime();
+                    state.wimhofCount = 0;
+                    state.kapalbhatiCount = 0;
+                    state.smokerCount = 0;
+                    state.currentCycle = 0;
+                    state.totalCycles = calculateTotalCycles();
+                    
+                    // Update stats
+                    state.stats.totalSessions++;
+                    const today = new Date().toISOString();
+                    
+                    // Check streak
+                    if (state.stats.lastSessionDate) {
+                        const lastSession = new Date(state.stats.lastSessionDate);
+                        const todayDate = new Date(today);
+                        const yesterday = new Date(todayDate);
+                        yesterday.setDate(yesterday.getDate() - 1);
+                        
+                        if (lastSession.toDateString() === yesterday.toDateString()) {
+                            state.stats.currentStreak++;
+                        } else if (lastSession.toDateString() !== todayDate.toDateString()) {
+                            state.stats.currentStreak = 0;
+                        }
+                    } else {
+                        state.stats.currentStreak = 1;
+                    }
+                    
+                    state.stats.lastSessionDate = today;
+                    
+                    startBtn.disabled = true;
+                    pauseBtn.disabled = false;
+                    resetBtn.disabled = false;
+                    
+                    startNextPhase();
+                }
+    
+                // Calculate total exercise time
+                function calculateTotalTime() {
+                    const technique = techniques[state.currentTechnique];
+                    let cycleTime = 0;
+                    
+                    switch (state.currentTechnique) {
+                        case 'box':
+                            cycleTime = settings.techniques.box[0] + settings.techniques.box[1] + 
+                                       settings.techniques.box[2] + settings.techniques.box[3];
+                            break;
+                        case '478':
+                            cycleTime = settings.techniques["478"][0] + settings.techniques["478"][1] + 
+                                       settings.techniques["478"][2];
+                            break;
+                        case 'physiological':
+                            cycleTime = settings.techniques.physiological[0] + 
+                                       settings.techniques.physiological[1] + 
+                                       settings.techniques.physiological[2];
+                            break;
+                        case 'wimhof':
+                            // Each round is breaths + hold
+                            cycleTime = (settings.techniques.wimhof[0] * 2) + // 1s inhale + 1s exhale per breath
+                                        settings.techniques.wimhof[1];
+                            break;
+                        case 'coherent':
+                            cycleTime = settings.techniques.coherent[0] + settings.techniques.coherent[1];
+                            break;
+                        case 'kapalbhati':
+                            // Each round is number of reps (1 second per rep)
+                            cycleTime = settings.techniques.kapalbhati[0] * 1;
+                            break;
+                        case 'smoker':
+                            cycleTime = settings.techniques.smoker[0] + settings.techniques.smoker[1] + 
+                                       settings.techniques.smoker[2] + settings.techniques.smoker[3];
+                            break;
+                    }
+                    
+                    return cycleTime * settings.totalRounds;
+                }
+    
+                // Calculate total cycles for progress tracking
+                function calculateTotalCycles() {
+                    const technique = techniques[state.currentTechnique];
+                    
+                    switch (state.currentTechnique) {
+                        case 'box':
+                            return settings.totalRounds * 4; // 4 phases per round
+                        case '478':
+                            return settings.totalRounds * 3; // 3 phases per round
+                        case 'physiological':
+                            return settings.totalRounds * 2; // 2 phases per round
+                        case 'wimhof':
+                            return settings.totalRounds * (settings.techniques.wimhof[0] + 1); // breaths + hold
+                        case 'coherent':
+                            return settings.totalRounds * 2; // inhale + exhale
+                        case 'kapalbhati':
+                            return settings.totalRounds * settings.techniques.kapalbhati[0]; // reps per round
+                        case 'smoker':
+                            return settings.totalRounds * 4; // inhale, hold, exhale, cough
+                    }
+                    
+                    return 0;
+                }
+    
+                function startNextPhase() {
+                    const technique = techniques[state.currentTechnique];
+                    
+                    // Clear any existing animations and sounds
+                    resetAnimation();
+                    if (currentSound) currentSound.stop();
+                    
+                    // For Wim Hof, handle specially
+                    if (state.currentTechnique === 'wimhof') {
+                        if (state.wimhofCount < settings.techniques.wimhof[0]) {
+                            // Hyperventilation phase
+                            state.currentPhase = 'hyperventilation';
+                            state.timeRemaining = 1; // 1 second per breath
+                            phaseText.textContent = state.wimhofCount % 2 === 0 ? 'Breathe In' : 'Breathe Out';
+                            breathingCircle.className = 'breathing-circle';
+                            breathingCircle.classList.add(state.wimhofCount % 2 === 0 ? 'inhale' : 'exhale');
+                            
+                            // Set animation for hyperventilation
+                            const animationType = state.wimhofCount % 2 === 0 ? 'breatheIn' : 'breatheOut';
+                            breathingCircle.style.animation = `${animationType} ${state.timeRemaining}s ease-in-out forwards`;
+                            
+                            if (settings.soundEnabled) {
+                                playSound(state.wimhofCount % 2 === 0 ? 440 : 220, 0.5);
+                            }
+                            
+                            state.wimhofCount++;
+                            state.currentCycle++;
+                        } else {
+                            // Retention phase
+                            state.currentPhase = 'holdAfterExhale';
+                            state.timeRemaining = settings.techniques.wimhof[1];
+                            phaseText.textContent = 'Hold';
+                            breathingCircle.className = 'breathing-circle';
+                            breathingCircle.classList.add('hold');
+                            state.currentCycle++;
+                        }
+                    } 
+                    // For Kapalbhati, handle specially
+                    else if (state.currentTechnique === 'kapalbhati') {
+                        if (state.kapalbhatiCount < settings.techniques.kapalbhati[0]) {
+                            state.currentPhase = 'forcefulExhale';
+                            state.timeRemaining = 0.5; // Quick exhale
+                            phaseText.textContent = 'Forceful Exhale';
+                            breathingCircle.className = 'breathing-circle';
+                            breathingCircle.classList.add('exhale');
+                            
+                            // Set animation for forceful exhale
+                            breathingCircle.style.animation = `breatheOut ${state.timeRemaining}s ease-in-out forwards`;
+                            
+                            if (settings.soundEnabled) {
+                                playSound(220, 0.2, 'square');
+                            }
+                            
+                            state.kapalbhatiCount++;
+                            state.currentCycle++;
+                        } else {
+                            // Completed one round
+                            if (state.currentRound >= settings.techniques.kapalbhati[1]) {
+                                completeExercise();
+                                return;
+                            }
+                            state.currentRound++;
+                            state.kapalbhatiCount = 0;
+                            setTimeout(startNextPhase, 1000); // Brief pause between rounds
+                            return;
+                        }
+                    }
+                    // For 4-7-8 Breathing, handle specially
+                    else if (state.currentTechnique === '478') {
+                        if (!state.currentPhase) {
+                            // Start with exhale (special for 478)
+                            state.currentPhase = 'exhale';
+                            state.timeRemaining = 2; // Quick initial exhale
+                            phaseText.textContent = 'Exhale Completely';
+                            breathingCircle.className = 'breathing-circle';
+                            breathingCircle.classList.add('exhale');
+                            breathingCircle.style.animation = `breatheOut ${state.timeRemaining}s ease-in-out forwards`;
+                            if (settings.soundEnabled) playSound(220, 1.8);
+                            state.currentCycle++;
+                        } else {
+                            // Move to next phase
+                            const currentIndex = techniques["478"].phases.indexOf(state.currentPhase);
+                            const nextIndex = (currentIndex + 1) % techniques["478"].phases.length;
+                            state.currentPhase = techniques["478"].phases[nextIndex];
+                            
+                            // Set phase parameters
+                            switch (state.currentPhase) {
+                                case 'inhale':
+                                    state.timeRemaining = settings.techniques["478"][0];
+                                    phaseText.textContent = 'Breathe In';
+                                    breathingCircle.className = 'breathing-circle';
+                                    breathingCircle.classList.add('inhale');
+                                    breathingCircle.style.animation = `breatheIn ${state.timeRemaining}s ease-in-out forwards`;
+                                    if (settings.soundEnabled) playSound(440, state.timeRemaining - 0.2);
+                                    state.currentCycle++;
+                                    break;
+                                    
+                                case 'holdAfterInhale':
+                                    state.timeRemaining = settings.techniques["478"][1];
+                                    phaseText.textContent = 'Hold';
+                                    breathingCircle.className = 'breathing-circle';
+                                    breathingCircle.classList.add('hold');
+                                    state.currentCycle++;
+                                    break;
+                                    
+                                case 'exhale':
+                                    state.timeRemaining = settings.techniques["478"][2];
+                                    phaseText.textContent = 'Breathe Out';
+                                    breathingCircle.className = 'breathing-circle';
+                                    breathingCircle.classList.add('exhale');
+                                    breathingCircle.style.animation = `breatheOut ${state.timeRemaining}s ease-in-out forwards`;
+                                    if (settings.soundEnabled) playSound(220, state.timeRemaining - 0.2);
+                                    state.currentCycle++;
+                                    break;
+                            }
+                        }
+                    }
+                    // For Smoker's technique
+                    else if (state.currentTechnique === 'smoker') {
+                        if (!state.currentPhase) {
+                            // Start with first phase
+                            state.currentPhase = technique.phases[0];
+                        } else {
+                            // Move to next phase
+                            const currentIndex = technique.phases.indexOf(state.currentPhase);
+                            const nextIndex = (currentIndex + 1) % technique.phases.length;
+                            state.currentPhase = technique.phases[nextIndex];
+                        }
+                        
+                        // Set phase parameters and animations
+                        switch (state.currentPhase) {
+                            case 'inhale':
+                                state.timeRemaining = settings.techniques.smoker[0];
+                                phaseText.textContent = 'Deep Inhale';
+                                breathingCircle.className = 'breathing-circle';
+                                breathingCircle.classList.add('inhale');
+                                breathingCircle.style.animation = `breatheIn ${state.timeRemaining}s ease-in-out forwards`;
+                                if (settings.soundEnabled) playSound(440, state.timeRemaining - 0.2);
+                                state.currentCycle++;
+                                break;
+                                
+                            case 'holdAfterInhale':
+                                state.timeRemaining = settings.techniques.smoker[1];
+                                phaseText.textContent = 'Hold';
+                                breathingCircle.className = 'breathing-circle';
+                                breathingCircle.classList.add('hold');
+                                state.currentCycle++;
+                                break;
+                                
+                            case 'exhale':
+                                state.timeRemaining = settings.techniques.smoker[2];
+                                phaseText.textContent = 'Forceful Exhale';
+                                breathingCircle.className = 'breathing-circle';
+                                breathingCircle.classList.add('smoker-purge');
+                                breathingCircle.style.animation = `smokerPurge ${state.timeRemaining}s ease-in-out forwards`;
+                                if (settings.soundEnabled) playSound(220, state.timeRemaining - 0.2, 'square');
+                                state.currentCycle++;
+                                break;
+                                
+                            case 'cough':
+                                state.timeRemaining = settings.techniques.smoker[3];
+                                phaseText.textContent = 'Cough (Optional)';
+                                breathingCircle.className = 'breathing-circle';
+                                breathingCircle.classList.add('hold');
+                                if (settings.soundEnabled) playSound(110, 0.5, 'square');
+                                state.currentCycle++;
+                                
+                                // Update smoker stats
+                                state.stats.tarCleared = Math.min(100, state.stats.tarCleared + 1);
+                                state.stats.co2Cleared = Math.min(100, state.stats.co2Cleared + 2);
+                                state.stats.cravingsReduced = Math.min(100, state.stats.cravingsReduced + 0.5);
+                                state.stats.lungCapacity = Math.min(100, state.stats.lungCapacity + 0.3);
+                                updateStatsDisplay();
+                                break;
+                        }
+                    }
+                    // For other techniques
+                    else {
+                        if (!state.currentPhase) {
+                            // Start with first phase
+                            state.currentPhase = technique.phases[0];
+                        } else {
+                            // Move to next phase
+                            const currentIndex = technique.phases.indexOf(state.currentPhase);
+                            const nextIndex = (currentIndex + 1) % technique.phases.length;
+                            state.currentPhase = technique.phases[nextIndex];
+                        }
+                        
+                        // Set phase parameters and animations
+                        switch (state.currentPhase) {
+                            case 'inhale':
+                                state.timeRemaining = state.currentTechnique === 'coherent' ? 
+                                    settings.techniques.coherent[0] : settings.techniques.box[0];
+                                phaseText.textContent = 'Breathe In';
+                                breathingCircle.className = 'breathing-circle';
+                                breathingCircle.classList.add('inhale');
+                                breathingCircle.style.animation = `breatheIn ${state.timeRemaining}s ease-in-out forwards`;
+                                if (settings.soundEnabled) playSound(440, state.timeRemaining - 0.2);
+                                state.currentCycle++;
+                                break;
+                                
+                            case 'holdAfterInhale':
+                                state.timeRemaining = state.currentTechnique === 'box' ? 
+                                    settings.techniques.box[1] : 0;
+                                phaseText.textContent = 'Hold';
+                                breathingCircle.className = 'breathing-circle';
+                                breathingCircle.classList.add('hold');
+                                state.currentCycle++;
+                                break;
+                                
+                            case 'exhale':
+                                state.timeRemaining = state.currentTechnique === 'coherent' ? 
+                                    settings.techniques.coherent[1] : 
+                                    (state.currentTechnique === 'box' ? settings.techniques.box[2] : 4);
+                                phaseText.textContent = 'Breathe Out';
+                                breathingCircle.className = 'breathing-circle';
+                                breathingCircle.classList.add('exhale');
+                                breathingCircle.style.animation = `breatheOut ${state.timeRemaining}s ease-in-out forwards`;
+                                if (settings.soundEnabled) playSound(220, state.timeRemaining - 0.2);
+                                state.currentCycle++;
+                                break;
+                                
+                            case 'holdAfterExhale':
+                                state.timeRemaining = state.currentTechnique === 'box' ? 
+                                    settings.techniques.box[3] : 0;
+                                phaseText.textContent = 'Hold';
+                                breathingCircle.className = 'breathing-circle';
+                                breathingCircle.classList.add('hold');
+                                state.currentCycle++;
+                                break;
+                                
+                            case 'doubleInhale':
+                                state.timeRemaining = settings.techniques.physiological[0];
+                                phaseText.textContent = 'Double Inhale';
+                                breathingCircle.className = 'breathing-circle';
+                                breathingCircle.classList.add('double-inhale');
+                                breathingCircle.style.animation = `doubleInhale ${state.timeRemaining}s ease-in-out forwards`;
+                                if (settings.soundEnabled) playSound(523.25, state.timeRemaining - 0.1);
+                                state.currentCycle++;
+                                break;
+                        }
+                    }
+                    
+                    updateTimerDisplay();
+                    updateProgressDisplay();
+                    
+                    // Clear any existing interval
+                    if (state.timerInterval) {
+                        clearInterval(state.timerInterval);
+                    }
+                    
+                    // Start countdown
+                    state.timerInterval = setInterval(function() {
+                        state.timeRemaining--;
+                        updateTimerDisplay();
+                        
+                        if (state.timeRemaining <= 0) {
+                            clearInterval(state.timerInterval);
+                            transitionAfterPhase();
+                        }
+                    }, 1000);
+                }
+    
+                // Reset animation state
+                function resetAnimation() {
+                    breathingCircle.style.animation = 'none';
+                    // Trigger reflow to reset animation
+                    void breathingCircle.offsetWidth;
+                }
+    
+                // Update the timer display
+                function updateTimerDisplay() {
+                    const minutes = Math.floor(state.timeRemaining / 60);
+                    const seconds = state.timeRemaining % 60;
+                    timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                }
+    
+                // Update the progress bar and round info
+                function updateProgressDisplay() {
+                    roundInfo.textContent = `Round ${state.currentRound} of ${settings.totalRounds}`;
+                    
+                    // Calculate progress percentage
+                    const progressPercentage = (state.currentCycle / state.totalCycles) * 100;
+                    progressFill.style.width = `${progressPercentage}%`;
+                }
+    
+                // Transition after phase completes
+                function transitionAfterPhase() {
+                    const technique = techniques[state.currentTechnique];
+                    
+                    // For Wim Hof method
+                    if (state.currentTechnique === 'wimhof') {
+                        if (state.currentPhase === 'holdAfterExhale') {
+                            // Completed one full round
+                            if (state.currentRound >= settings.totalRounds) {
+                                completeExercise();
+                                return;
+                            }
+                            state.currentRound++;
+                            state.wimhofCount = 0;
+                        }
+                    } 
+                    // For Kapalbhati - handled in startNextPhase
+                    // For 4-7-8 Breathing
+                    else if (state.currentTechnique === '478') {
+                        // For 478, we complete a full cycle after exhale
+                        if (state.currentPhase === 'exhale') {
+                            if (state.currentRound >= settings.totalRounds) {
+                                completeExercise();
+                                return;
+                            }
+                            state.currentRound++;
+                        }
+                    }
+                    // For physiological sigh
+                    else if (state.currentTechnique === 'physiological') {
+                        if (state.currentPhase === 'exhale') {
+                            // Completed one full round
+                            if (state.currentRound >= settings.totalRounds) {
+                                completeExercise();
+                                return;
+                            }
+                            state.currentRound++;
+                        }
+                    }
+                    // For smoker's technique
+                    else if (state.currentTechnique === 'smoker') {
+                        if (state.currentPhase === 'cough') {
+                            if (state.currentRound >= settings.totalRounds) {
+                                completeExercise();
+                                return;
+                            }
+                            state.currentRound++;
+                        }
+                    }
+                    // For all other techniques
+                    else {
+                        // Check if we've completed all phases of one round
+                        if (state.currentPhase === technique.phases[technique.phases.length - 1]) {
+                            if (state.currentRound >= settings.totalRounds) {
+                                completeExercise();
+                                return;
+                            }
+                            state.currentRound++;
+                        }
+                    }
+    
+                    // Start next phase
+                    startNextPhase();
+                }
+    
+                // Complete the exercise
+                function completeExercise() {
+                    state.isRunning = false;
+                    state.isPaused = false;
+                    state.currentPhase = null;
+                    
+                    // Update stats
+                    const minutesCompleted = Math.ceil(state.totalTime / 60);
+                    state.stats.totalMinutes += minutesCompleted;
+                    state.stats.lungCapacity = Math.min(100, state.stats.lungCapacity + (minutesCompleted * 0.5));
+                    saveSettings();
+                    updateStatsDisplay();
+                    
+                    // Reset UI
+                    phaseText.textContent = 'Complete!';
+                    breathingCircle.className = 'breathing-circle';
+                    breathingCircle.classList.add('success');
+                    
+                    startBtn.disabled = false;
+                    pauseBtn.disabled = true;
+                    resetBtn.disabled = false;
+                    
+                    // Clear timer and animation
+                    clearInterval(state.timerInterval);
+                    state.timerInterval = null;
+                    resetAnimation();
+                    
+                    // Play completion sound if enabled
+                    if (settings.soundEnabled) {
+                        playSound(880, 1, 'triangle');
+                    }
+                }
+    
+                // Pause the exercise
+                function pauseExercise() {
+                    if (!state.isRunning || state.isPaused) return;
+                    
+                    state.isPaused = true;
+                    state.isRunning = false;
+                    clearInterval(state.timerInterval);
+                    state.timerInterval = null;
+                    
+                    // Pause animation
+                    const computedStyle = window.getComputedStyle(breathingCircle);
+                    const animationName = computedStyle.getPropertyValue('animation-name');
+                    if (animationName !== 'none') {
+                        breathingCircle.style.animationPlayState = 'paused';
+                    }
+                    
+                    phaseText.textContent = 'Paused';
+                    breathingCircle.classList.add('hold');
+                    
+                    startBtn.disabled = false;
+                    pauseBtn.disabled = true;
+                }
+    
+                // Reset the exercise
+                function resetExercise() {
+                    state.isRunning = false;
+                    state.isPaused = false;
+                    state.currentPhase = null;
+                    state.currentRound = 0;
+                    state.timeRemaining = 0;
+                    state.wimhofCount = 0;
+                    state.kapalbhatiCount = 0;
+                    state.smokerCount = 0;
+                    state.currentCycle = 0;
+                    
+                    clearInterval(state.timerInterval);
+                    state.timerInterval = null;
+                    
+                    // Reset UI
+                    phaseText.textContent = 'Ready';
+                    breathingCircle.className = 'breathing-circle';
+                    resetAnimation();
+                    timerDisplay.textContent = '0:00';
+                    roundInfo.textContent = `Round 0 of ${settings.totalRounds}`;
+                    progressFill.style.width = '0%';
+                    
+                    startBtn.disabled = false;
+                    pauseBtn.disabled = true;
+                    resetBtn.disabled = true;
+                }
+    
+                // Initialize the app
+                init();
+            });
+        </script>
+    </body>
+    </html>
